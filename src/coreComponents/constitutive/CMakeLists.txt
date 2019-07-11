@@ -8,6 +8,10 @@ set( constitutive_headers
      Fluid/SingleFluidBase.hpp
      Fluid/MultiFluidBase.hpp
      Fluid/CompressibleSinglePhaseFluid.hpp
+     Fluid/ReactiveFluidBase.hpp
+     Fluid/EquilibratedChemicalFluid.hpp
+     Fluid/ThermoDatabases/ThermoDatabaseBase.hpp
+     Fluid/ThermoDatabases/EQ36Database.hpp     
      Solid/LinearElasticAnisotropic.hpp
      Solid/LinearElasticIsotropic.hpp
      Solid/PoroElastic.hpp
@@ -31,6 +35,9 @@ set( constitutive_sources
      Fluid/SingleFluidBase.cpp
      Fluid/MultiFluidBase.cpp
      Fluid/CompressibleSinglePhaseFluid.cpp
+     Fluid/ReactiveFluidBase.cpp
+     Fluid/EquilibratedChemicalFluid.cpp
+     Fluid/ThermoDatabases/EQ36Database.cpp          
      Solid/LinearElasticAnisotropic.cpp
      Solid/LinearElasticIsotropic.cpp
      Solid/PoroElastic.cpp

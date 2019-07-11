@@ -16,6 +16,7 @@ set( physicsSolvers_headers
      FiniteVolume/SinglePhaseFlowKernels.hpp
      FiniteVolume/CompositionalMultiphaseFlow.hpp
      FiniteVolume/CompositionalMultiphaseFlowKernels.hpp
+     FiniteVolume/GeochemicalModel.hpp     
      Wells/WellSolverBase.hpp
      Wells/SinglePhaseWell.hpp
      Wells/CompositionalMultiphaseWell.hpp
@@ -43,6 +44,7 @@ set( physicsSolvers_sources
      FiniteVolume/SinglePhaseFlowKernels.cpp
      FiniteVolume/CompositionalMultiphaseFlow.cpp
      FiniteVolume/CompositionalMultiphaseFlowKernels.cpp
+     FiniteVolume/GeochemicalModel.cpp          
      Wells/WellSolverBase.cpp
      Wells/SinglePhaseWell.cpp
      Wells/CompositionalMultiphaseWell.cpp

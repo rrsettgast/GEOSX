@@ -380,6 +380,8 @@ real64 SolverBase::NonlinearImplicitStep( real64 const & time_n,
 
 
       // do line search in case residual has increased
+
+      /* disable line-search temporarily 
       if( residualNorm > lastResidual )
       {
 
@@ -393,7 +395,7 @@ real64 SolverBase::NonlinearImplicitStep( real64 const & time_n,
           break;
         }
       }
-
+      */
       // call the default linear solver on the system
       SolveSystem( dofManager, matrix, rhs, solution );
 
