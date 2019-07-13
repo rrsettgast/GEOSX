@@ -349,7 +349,7 @@ real64 SolverBase::NonlinearImplicitStep( real64 const & time_n,
     }
 
     // keep residual from previous iteration in case we need to do a line search
-    real64 lastResidual = 1e99;
+    //    real64 lastResidual = 1e99;
     integer & newtonIter = solverParams->numNewtonIterations();
 
     // main Newton loop
@@ -409,7 +409,7 @@ real64 SolverBase::NonlinearImplicitStep( real64 const & time_n,
       // apply the system solution to the fields/variables
       ApplySystemSolution( dofManager, solution, 1.0, domain );
 
-      lastResidual = residualNorm;
+      //      lastResidual = residualNorm;
     }
     if( isConverged )
     {
