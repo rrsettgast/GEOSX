@@ -314,7 +314,7 @@ bool SolverBase::LineSearch( real64 const & time_n,
 
 real64 SolverBase::NonlinearImplicitStep( real64 const & time_n,
                                           real64 const & dt,
-                                          integer const cycleNumber,
+                                          integer const ,//cycleNumber,
                                           DomainPartition * const domain,
                                           DofManager const & dofManager,
                                           ParallelMatrix & matrix,
