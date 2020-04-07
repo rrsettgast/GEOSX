@@ -26,6 +26,7 @@
 #include "constitutive/fluid/SingleFluidBase.hpp"
 #include "managers/NumericalMethodsManager.hpp"
 #include "finiteElement/Kinematics.h"
+#include "finiteElement/ElementLibrary/FiniteElementBase.h"
 #include "managers/DomainPartition.hpp"
 #include "mesh/MeshForLoopInterface.hpp"
 #include "meshUtilities/ComputationalGeometry.hpp"
@@ -347,9 +348,38 @@ void PoroelasticSolver::UpdateDeformationForCoupling( DomainPartition * const do
                  getReference< array3d< real64, solid::STRESS_PERMUTATION > >( SolidBase::viewKeyStruct::stressString );
 
 
-      localIndex const numNodesPerElement = elemsToNodes.size( 1 );
-      localIndex const numQuadraturePoints = feDiscretization->m_finiteElement->n_quadrature_points();
+       std::unique_ptr< FiniteElementBase >
+       fe = feDiscretization->getFiniteElement( cellElementSubRegion->GetElementTypeString() );
 
+       real64 (* computeCellVolume)( R1Tensor const * const X ) = nullptr;
+       switch( FiniteElementBase::StringToElementType( cellElementSubRegion->GetElementTypeString() ) )
+       {
+         case FiniteElementBase::ElementType::Tetrahedal:
+         {
+           computeCellVolume = &computationalGeometry::TetVolume;
+         }
+         break;
+         case FiniteElementBase::ElementType::Pyramid:
+         {
+           computeCellVolume = &computationalGeometry::PyramidVolume;
+         }
+         break;
+         case FiniteElementBase::ElementType::Prism:
+         {
+           computeCellVolume = &computationalGeometry::WedgeVolume;
+         }
+         break;
+         case FiniteElementBase::ElementType::Hexahedral:
+         {
+           computeCellVolume = &computationalGeometry::HexVolume;
+         }
+         break;
+         default:
+           GEOSX_ERROR( "Unsupported element type" );
+       }
+
+      localIndex const numNodesPerElement = elemsToNodes.size( 1 );
+      localIndex const numQuadraturePoints = fe->n_quadrature_points();// feDiscretization->m_finiteElement->n_quadrature_points();
 
       forAll< parallelHostPolicy >( cellElementSubRegion->size(), [=] ( localIndex const ei )
       {
@@ -381,8 +411,7 @@ void PoroelasticSolver::UpdateDeformationForCoupling( DomainPartition * const do
           Xlocal[a] = X[elemsToNodes[ei][a]];
           Xlocal[a] += u[elemsToNodes[ei][a]];
         }
-
-        dVol[ei] = computationalGeometry::HexVolume( Xlocal ) - volume[ei];
+        dVol[ei] = computeCellVolume( Xlocal ) - volume[ei];
       } );
     }
   }
@@ -661,7 +690,6 @@ real64 PoroelasticSolver::SplitOperatorStep( real64 const & time_n,
                                                            fluidSolver.getSystemMatrix(),
                                                            fluidSolver.getSystemRhs(),
                                                            fluidSolver.getSystemSolution() );
-
     if( dtReturnTemporary < dtReturn )
     {
       iter = 0;
@@ -686,7 +714,6 @@ real64 PoroelasticSolver::SplitOperatorStep( real64 const & time_n,
                                                            solidSolver.getSystemMatrix(),
                                                            solidSolver.getSystemRhs(),
                                                            solidSolver.getSystemSolution() );
-
     solidSolver.updateStress( domain );
 
     if( dtReturnTemporary < dtReturn )
