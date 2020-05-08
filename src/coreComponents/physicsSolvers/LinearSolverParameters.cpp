@@ -106,7 +106,7 @@ void LinearSolverParametersInput::PostProcessInput()
   static const std::set< string > solverOptions = { "direct", "cg", "gmres", "fgmres", "bicgstab", "preconditioner" };
   GEOSX_ERROR_IF( solverOptions.count( m_parameters.solverType ) == 0, "Unsupported solver type: " << m_parameters.solverType );
 
-  static const std::set< string > precondOptions = { "none", "jacobi", "iluk", "ilut", "icc", "amg", "mgr", "block" };
+  static const std::set< string > precondOptions = { "none", "jacobi", "iluk", "ilut", "icc", "amg", "mgr", "block", "direct" };
   GEOSX_ERROR_IF( precondOptions.count( m_parameters.preconditionerType ) == 0, "Unsupported preconditioner type: " << m_parameters.preconditionerType );
 
   GEOSX_ERROR_IF_LT_MSG( m_parameters.krylov.maxIterations, 0, "Invalid value of " << viewKeyStruct::krylovMaxIterString );

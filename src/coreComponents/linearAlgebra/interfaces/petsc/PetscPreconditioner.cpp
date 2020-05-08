@@ -18,8 +18,6 @@
 
 #include "PetscPreconditioner.hpp"
 
-#include "linearAlgebra/utilities/LAIHelperFunctions.hpp"
-
 #include <petscksp.h>
 
 namespace geosx
@@ -37,7 +35,7 @@ PetscPreconditioner::~PetscPreconditioner()
   clear();
 }
 
-void CreatePetscAMG( LinearSolverParameters const & params, PC precond )
+void CreatePetscAMG( LinearSolverParameters const & params, PC const precond )
 {
   // Default options only for the moment
   GEOSX_LAI_CHECK_ERROR( PCSetType( precond, PCGAMG ) );
@@ -161,7 +159,7 @@ PCType getPetscSmootherType( string const & type )
   return typeMap.at( type );
 }
 
-void CreatePetscSmoother( LinearSolverParameters const & params, PC precond )
+void CreatePetscSmoother( LinearSolverParameters const & params, PC const precond )
 {
   // Set up additive Schwartz outer preconditioner
   GEOSX_LAI_CHECK_ERROR( PCSetType( precond, PCASM ) );
@@ -181,6 +179,13 @@ void CreatePetscSmoother( LinearSolverParameters const & params, PC precond )
   GEOSX_LAI_CHECK_ERROR( KSPGetPC( ksp_local[0], &prec_local ) );
   GEOSX_LAI_CHECK_ERROR( PCSetType( prec_local, getPetscSmootherType( params.preconditionerType ) ) );
   GEOSX_LAI_CHECK_ERROR( PCFactorSetLevels( prec_local, params.ilu.fill ) );
+}
+
+void CreatePetscDirect( LinearSolverParameters const & GEOSX_UNUSED_PARAM( params ), PC const precond )
+{
+  GEOSX_LAI_CHECK_ERROR( PCSetType( precond, PCLU ) );
+  GEOSX_LAI_CHECK_ERROR( PCFactorSetMatSolverType( precond, MATSOLVERSUPERLU_DIST ) );
+  GEOSX_LAI_CHECK_ERROR( PCSetUp( precond ) );
 }
 
 void PetscPreconditioner::compute( PetscMatrix const & mat )
@@ -219,6 +224,10 @@ void PetscPreconditioner::compute( PetscMatrix const & mat )
              m_parameters.preconditionerType == "icc" )
     {
       CreatePetscSmoother( m_parameters, m_precond );
+    }
+    else if( m_parameters.preconditionerType == "direct" )
+    {
+      CreatePetscDirect( m_parameters, m_precond );
     }
     else
     {

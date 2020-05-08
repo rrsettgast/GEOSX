@@ -22,7 +22,6 @@
 #include "linearAlgebra/DofManager.hpp"
 #include "linearAlgebra/interfaces/hypre/HypreUtils.hpp"
 #include "linearAlgebra/utilities/LinearSolverParameters.hpp"
-#include "linearAlgebra/utilities/LAIHelperFunctions.hpp"
 
 #include <_hypre_utilities.h>
 #include <_hypre_parcsr_ls.h>
@@ -66,6 +65,10 @@ HyprePreconditioner::HyprePreconditioner( LinearSolverParameters params,
     else if( m_parameters.preconditionerType == "ilut" )
     {
       createILUT();
+    }
+    else if( m_parameters.preconditionerType == "direct" )
+    {
+      createDirect();
     }
     else
     {
@@ -532,6 +535,42 @@ void HyprePreconditioner::createILUT()
   m_functions->setup = HYPRE_ILUSetup;
   m_functions->apply = HYPRE_ILUSolve;
   m_functions->destroy = HYPRE_ILUDestroy;
+}
+
+namespace internal
+{
+
+static HYPRE_Int
+HYPRE_SLUDistSetup( HYPRE_Solver solver,
+                    HYPRE_ParCSRMatrix A,
+                    HYPRE_ParVector GEOSX_UNUSED_PARAM( b ),
+                    HYPRE_ParVector GEOSX_UNUSED_PARAM( x ) )
+{
+  return hypre_SLUDistSetup( &solver, A, 0 );
+}
+
+static HYPRE_Int
+HYPRE_SLUDistSolve( HYPRE_Solver solver,
+                    HYPRE_ParCSRMatrix GEOSX_UNUSED_PARAM( A ),
+                    HYPRE_ParVector b,
+                    HYPRE_ParVector x )
+{
+  return hypre_SLUDistSolve( solver, b, x );
+}
+
+static HYPRE_Int
+HYPRE_SLUDistDestroy( HYPRE_Solver solver )
+{
+  return hypre_SLUDistDestroy( solver );
+}
+
+}
+
+void HyprePreconditioner::createDirect()
+{
+  m_functions->setup = internal::HYPRE_SLUDistSetup;
+  m_functions->apply = internal::HYPRE_SLUDistSolve;
+  m_functions->destroy = internal::HYPRE_SLUDistDestroy;
 }
 
 void HyprePreconditioner::compute( Matrix const & mat )

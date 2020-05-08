@@ -13,11 +13,11 @@
  */
 
 /**
- * @file TrilinosSolver.hpp
+ * @file TrilinosTpetraSolver.hpp
  */
 
-#ifndef GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSSOLVER_HPP_
-#define GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSSOLVER_HPP_
+#ifndef GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRASOLVER_HPP_
+#define GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRASOLVER_HPP_
 
 #include "linearAlgebra/utilities/LinearSolverParameters.hpp"
 #include "linearAlgebra/utilities/LinearSolverResult.hpp"
@@ -26,29 +26,28 @@ namespace geosx
 {
 
 class DofManager;
-class EpetraVector;
-class EpetraMatrix;
+class TpetraVector;
+class TpetraMatrix;
 class LinearSolverParameters;
 
 /**
- * @brief This class creates and provides basic support for AztecOO, Amesos and ML libraries.
+ * @brief Wrapper for Trilinos/Tpetra-based direct and interative linear solvers.
  */
-class TrilinosSolver
+class TrilinosTpetraSolver
 {
 public:
 
   /**
-   * @brief Solver constructor, with parameter list reference
-   *
+   * @brief Solver constructor, with parameter list reference.
    * @param[in] parameters structure containing linear solver parameters
    */
-  TrilinosSolver( LinearSolverParameters parameters );
+  TrilinosTpetraSolver( LinearSolverParameters parameters );
 
   /**
    * @brief Virtual destructor.
    *
    */
-  ~TrilinosSolver();
+  ~TrilinosTpetraSolver();
 
   /**
    * @brief Solve a linear system Ax=b with an iterative solver.
@@ -57,9 +56,9 @@ public:
    * @param[in,out] rhs the right-hand side
    * @param dofManager the Degree-of-Freedom manager associated with matrix
    */
-  void solve( EpetraMatrix & mat,
-              EpetraVector & sol,
-              EpetraVector & rhs,
+  void solve( TpetraMatrix & mat,
+              TpetraVector & sol,
+              TpetraVector & rhs,
               DofManager const * const dofManager = nullptr );
 
   /**
@@ -76,16 +75,15 @@ private:
   LinearSolverParameters m_parameters;
   LinearSolverResult m_result;
 
-  void solve_direct( EpetraMatrix & mat,
-                     EpetraVector & sol,
-                     EpetraVector & rhs );
+  void solve_direct( TpetraMatrix & mat,
+                     TpetraVector & sol,
+                     TpetraVector & rhs );
 
-  void solve_krylov( EpetraMatrix & mat,
-                     EpetraVector & sol,
-                     EpetraVector & rhs );
-
+  void solve_krylov( TpetraMatrix & mat,
+                     TpetraVector & sol,
+                     TpetraVector & rhs );
 };
 
-} // end geosx namespace
+} // namespace geosx
 
-#endif /* TRILINOSSOLVER_HPP_ */
+#endif //GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRASOLVER_HPP_

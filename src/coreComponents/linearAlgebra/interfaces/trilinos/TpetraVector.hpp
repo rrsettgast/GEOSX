@@ -13,25 +13,25 @@
  */
 
 /**
- * @file EpetraVector.hpp
+ * @file TpetraVector.hpp
  */
 
-#ifndef GEOSX_LINEARALGEBRA_INTERFACES_EPETRAVECTOR_HPP_
-#define GEOSX_LINEARALGEBRA_INTERFACES_EPETRAVECTOR_HPP_
+#ifndef GEOSX_LINEARALGEBRA_INTERFACES_TPETRAVECTOR_HPP_
+#define GEOSX_LINEARALGEBRA_INTERFACES_TPETRAVECTOR_HPP_
 
 #include "linearAlgebra/interfaces/VectorBase.hpp"
 
-class Epetra_FEVector;
+#include <Tpetra_MultiVector_fwd.hpp>
+#include <Tpetra_Vector_fwd.hpp>
+#include <Tpetra_Map_fwd.hpp>
 
 namespace geosx
 {
 
 /**
- * @brief This class creates and provides basic support for the Epetra_FEVector
- *        vector object type used in Trilinos.  We use the FE version because
- *        Epetra_Vector support for long globalIDs is haphazard.
+ * @brief Wrapper class for Trilinos/Tpetra's Vector class.
  */
-class EpetraVector final : private VectorBase< EpetraVector >
+class TpetraVector final : private VectorBase< TpetraVector >
 {
 public:
 
@@ -44,38 +44,38 @@ public:
    * @brief Empty vector constructor.
    * Create an empty (distributed) vector.
    */
-  EpetraVector();
+  TpetraVector();
 
   /**
    * @brief Copy constructor.
-   * @param src EpetraVector to be copied.
+   * @param src vector to be copied
    */
-  EpetraVector( EpetraVector const & src );
+  TpetraVector( TpetraVector const & src );
 
   /**
    * @brief Move constructor
-   * @param src EpetraVector to move from
+   * @param src vector to move from
    */
-  EpetraVector( EpetraVector && src ) noexcept;
+  TpetraVector( TpetraVector && src ) noexcept;
 
   /**
    * @brief Copy assignment.
-   * @param src EpetraVector to be copied.
-   * @return the new vector
+   * @param src vector to be copied
+   * @return reference to this object
    */
-  EpetraVector & operator=( EpetraVector const & src );
+  TpetraVector & operator=( TpetraVector const & src );
 
   /**
    * @brief Move assignment.
-   * @param src EpetraVector to be moved from.
-   * @return the new vector
+   * @param src vector to move from
+   * @return reference to this object
    */
-  EpetraVector & operator=( EpetraVector && src ) noexcept;
+  TpetraVector & operator=( TpetraVector && src ) noexcept;
 
   /**
    * @brief Destructor.
    */
-  ~EpetraVector();
+  ~TpetraVector();
 
   ///@}
 
@@ -86,7 +86,6 @@ public:
 
   using VectorBase::closed;
   using VectorBase::ready;
-  using VectorBase::extract;
 
   virtual bool created() const override;
 
@@ -135,15 +134,15 @@ public:
 
   virtual void reciprocal() override;
 
-  virtual real64 dot( EpetraVector const & vec ) const override;
+  virtual real64 dot( TpetraVector const & vec ) const override;
 
-  virtual void copy( EpetraVector const & x ) override;
+  virtual void copy( TpetraVector const & x ) override;
 
   virtual void axpy( real64 const alpha,
-                     EpetraVector const & x ) override;
+                     TpetraVector const & x ) override;
 
   virtual void axpby( real64 const alpha,
-                      EpetraVector const & x,
+                      TpetraVector const & x,
                       real64 const beta ) override;
 
   virtual real64 norm1() const override;
@@ -173,6 +172,8 @@ public:
 
   virtual real64 * extractLocalVector() override;
 
+  virtual void extract( arrayView1d< real64 > const & localVector ) const override;
+
   virtual MPI_Comm getComm() const override;
 
   virtual void print( std::ostream & os = std::cout ) const override;
@@ -183,23 +184,45 @@ public:
   ///@}
 
   /**
-   * @brief Returns a const pointer to the underlying Epetra object.
-   * @return const pointer to the underlying Epetra object
+   * @brief Alias for Tpetra map template instantiation used by this class.
    */
-  Epetra_FEVector const & unwrapped() const;
+  using Tpetra_Map = Tpetra::Map< int, globalIndex >;
 
   /**
-   * @brief Returns a non-const pointer to the underlying Epetra object.
-   * @return non-const pointer to the underlying Epetra object
+   * @brief Alias for specific Tpetra vector template instantiation wrapped by this class.
+   *
+   * @note This uses Tpetra's default execution/memory space. When built with CUDA support,
+   * this will be equal to Kokkos::Cuda, so we won't be able to create a host-only vector.
+   * If we want both in the same executable, we'll have to make adjustments to our LAI approach.
    */
-  Epetra_FEVector & unwrapped();
+  using Tpetra_Vector = Tpetra::Vector< real64, int, globalIndex >;
+
+  /**
+   * @brief Alias for specific Tpetra::MultiVector vector template instantiation wrapped by this class.
+   *
+   * This is needed for correct specification of template arguments for solver classes (e.g. Belos)
+   * which must be templated on MultiVector and not Vector to invoke the right explicit instantiations.
+   */
+  using Tpetra_MultiVector = Tpetra::MultiVector< real64, int, globalIndex >;
+
+  /**
+   * @brief Get the underlying Tpetra object.
+   * @return reference to wrapped vector
+   */
+  Tpetra_Vector const & unwrapped() const;
+
+  /**
+   * @copydoc unwrapped() const
+   */
+  Tpetra_Vector & unwrapped();
 
 private:
 
-  /// Unique pointer to underlying Epetra_FEVector object.
-  std::unique_ptr< Epetra_FEVector > m_vector;
+  /// Pointer to wrapped Tpetra object.
+  std::unique_ptr< Tpetra_Vector > m_vector;
+
 };
 
-} // end geosx namespace
+} // namespace geosx
 
-#endif /*GEOSX_LINEARALGEBRA_INTERFACES_EPETRAVECTOR_HPP_*/
+#endif //GEOSX_LINEARALGEBRA_INTERFACES_TPETRAVECTOR_HPP_

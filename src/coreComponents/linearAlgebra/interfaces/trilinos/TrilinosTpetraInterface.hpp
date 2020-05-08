@@ -13,35 +13,32 @@
  */
 
 /**
- * @file TrilinosInterface.hpp
+ * @file TrilinosTpetraInterface.hpp
  */
 
-#ifndef GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSINTERFACE_HPP_
-#define GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSINTERFACE_HPP_
+#ifndef GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRAINTERFACE_HPP_
+#define GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRAINTERFACE_HPP_
 
-#include "linearAlgebra/interfaces/trilinos/EpetraVector.hpp"
-#include "linearAlgebra/interfaces/trilinos/EpetraMatrix.hpp"
-#include "linearAlgebra/interfaces/trilinos/TrilinosSolver.hpp"
+#include "linearAlgebra/interfaces/trilinos/TpetraVector.hpp"
+#include "linearAlgebra/interfaces/trilinos/TpetraMatrix.hpp"
+#include "linearAlgebra/interfaces/trilinos/TrilinosTpetraSolver.hpp"
 #include "linearAlgebra/solvers/PreconditionerBase.hpp"
 #include "linearAlgebra/utilities/LinearSolverParameters.hpp"
-
-#include <memory>
 
 namespace geosx
 {
 
 /**
- * @class TrilinosInterface
  * @brief This class holds aliases based on the Trilinos library.
  */
-struct TrilinosInterface
+struct TrilinosTpetraInterface
 {
-  /**
-   * @brief Initializes the Trilinos library
-   *
-   * @param[in] argc standard argc as in any C main
-   * @param[in] argv standard argv as in any C main
-   */
+/**
+ * @brief Initializes the Trilinos library
+ *
+ * @param[in] argc standard argc as in any C main
+ * @param[in] argv standard argv as in any C main
+ */
   static void initialize( int & argc, char * * & argv );
 
   /**
@@ -54,17 +51,17 @@ struct TrilinosInterface
    * @param params the preconditioner parameters
    * @return an owning pointer to the newly created preconditioner
    */
-  static std::unique_ptr< PreconditionerBase< TrilinosInterface > >
+  static std::unique_ptr< PreconditionerBase< TrilinosTpetraInterface > >
   createPreconditioner( LinearSolverParameters params );
 
-  /// Alias for EpetraMatrix
-  using ParallelMatrix = EpetraMatrix;
-  /// Alias for EpetraVector
-  using ParallelVector = EpetraVector;
-  /// Alias for TrilinosSolver
-  using LinearSolver   = TrilinosSolver;
+  /// Alias for TpetraMatrix
+  using ParallelMatrix = TpetraMatrix;
+  /// Alias for TpetraVector
+  using ParallelVector = TpetraVector;
+  /// Alias for TrilinosTpetraSolver
+  using LinearSolver   = TrilinosTpetraSolver;
 };
 
-} /* namespace geosx */
+}
 
-#endif /* GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSINTERFACE_HPP_ */
+#endif //GEOSX_LINEARALGEBRA_INTERFACES_TRILINOSTPETRAINTERFACE_HPP_

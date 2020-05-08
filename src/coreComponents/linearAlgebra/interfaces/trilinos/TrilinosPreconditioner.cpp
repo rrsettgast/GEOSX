@@ -71,7 +71,7 @@ string const & getMLSmootherType( string const & value )
   return optionMap.at( value );
 }
 
-string const & getMLCoarseType( string const & value )
+string const & getMueLuCoarseType( string const & value )
 {
   static std::map< string, string > const optionMap =
   {
@@ -103,7 +103,7 @@ CreateMLOperator( LinearSolverParameters const & params, Epetra_RowMatrix const 
   list.set( "prec type", getMLCycleType( params.amg.cycleType ) );
   list.set( "smoother: type", getMLSmootherType( params.amg.smootherType ) );
   list.set( "smoother: pre or post", params.amg.preOrPostSmoothing );
-  list.set( "coarse: type", getMLCoarseType( params.amg.coarseType ) );
+  list.set( "coarse: type", getMueLuCoarseType( params.amg.coarseType ) );
 
   std::unique_ptr< Epetra_Operator > precond =
     std::make_unique< ML_Epetra::MultiLevelPreconditioner >( matrix, list );
@@ -117,17 +117,16 @@ Ifpack::EPrecType getIfpackPrecondType( string const & type )
   {
     { "iluk", Ifpack::ILU },
     { "ilut", Ifpack::ILUT },
-    { "icc", Ifpack::IC },
-    { "ict", Ifpack::ICT },
     { "jacobi", Ifpack::POINT_RELAXATION },
     { "gs", Ifpack::POINT_RELAXATION },
     { "sgs", Ifpack::POINT_RELAXATION },
+    { "direct", Ifpack::AMESOS }
   };
 
   GEOSX_LAI_ASSERT_MSG( typeMap.count( type ) > 0, "Unsupported Trilinos/Ifpack preconditioner option: " << type );
   return typeMap.at( type );
 }
-string getIfpackRelaxationType( string const & type )
+string getIfpack2RelaxationType( string const & type )
 {
   static std::map< string, string > const typeMap =
   {
@@ -150,9 +149,9 @@ CreateIfpackOperator( LinearSolverParameters const & params, Epetra_RowMatrix co
   Teuchos::ParameterList list;
   if( type == Ifpack::POINT_RELAXATION )
   {
-    list.set( "relaxation: type", getIfpackRelaxationType( params.preconditionerType ) );
+    list.set( "relaxation: type", getIfpack2RelaxationType( params.preconditionerType ) );
   }
-  else
+  else if( type == Ifpack::ILU || type == Ifpack::ILUT )
   {
     list.set( "fact: level-of-fill", params.ilu.fill );
     list.set( "fact: ilut level-of-fill", std::max( real64( params.ilu.fill ), 1.0 ) );
@@ -182,8 +181,7 @@ void TrilinosPreconditioner::compute( Matrix const & mat )
   }
   else if( m_parameters.preconditionerType == "iluk" ||
            m_parameters.preconditionerType == "ilut" ||
-           m_parameters.preconditionerType == "icc" ||
-           m_parameters.preconditionerType == "ict" )
+           m_parameters.preconditionerType == "direct" )
   {
     m_precond = CreateIfpackOperator( m_parameters, mat.unwrapped() );
   }
