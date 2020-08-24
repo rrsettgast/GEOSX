@@ -411,7 +411,7 @@ public:
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   void const * voidPointer() const override
-  { return wrapperHelpers::dataPtr( reference() ); }
+  { return wrapperHelpers::dataPtr( *m_data ); }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   virtual localIndex elementByteSize() const override
@@ -512,7 +512,7 @@ public:
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   virtual void move( LvArray::MemorySpace const space, bool const touch ) const override
-  { return wrapperHelpers::move( reference(), space, touch ); }
+  { return wrapperHelpers::move( *m_data, space, touch ); }
 
   ///@}
 
@@ -533,8 +533,7 @@ public:
    * @return reference to T, or in the case of an Array, a reference to an
    *         ArrayView<T const> const.
    */
-  traits::ViewTypeConst< T >
-  reference() const
+  decltype( auto ) reference() const
   { return referenceAsView(); }
 
   /**
@@ -545,33 +544,29 @@ public:
    * This is used mainly for @p LvArray classes (arrays, etc.) that can convert
    * themselves into views. For other types, a regular reference is returned.
    */
-  template< class U=T >
-  std::enable_if_t< traits::HasMemberFunction_toView< U >, traits::ViewType< U > >
-  referenceAsView()
+  template< typename _T=T, typename=std::enable_if_t< traits::HasMemberFunction_toView< _T > > >
+  decltype( auto ) referenceAsView()
   { return m_data->toView(); }
 
   /**
    * @copydoc referenceAsView()
    */
-  template< class U=T >
-  std::enable_if_t< !traits::HasMemberFunction_toView< U >, traits::ViewType< U > >
-  referenceAsView()
+  template< typename _T=T, typename=std::enable_if_t< !traits::HasMemberFunction_toView< _T > > >
+  T & referenceAsView()
   { return *m_data; }
 
   /**
    * @copydoc referenceAsView()
    */
-  template< class U=T >
-  std::enable_if_t< traits::HasMemberFunction_toView< U >, traits::ViewTypeConst< U > >
-  referenceAsView() const
+  template< typename _T=T, typename=std::enable_if_t< traits::HasMemberFunction_toView< _T > > >
+  decltype( auto ) referenceAsView() const
   { return m_data->toViewConst(); }
 
   /**
    * @copydoc referenceAsView()
    */
-  template< class U=T >
-  std::enable_if_t< !traits::HasMemberFunction_toView< U >, traits::ViewTypeConst< U > >
-  referenceAsView() const
+  template< typename _T=T, typename=std::enable_if_t< !traits::HasMemberFunction_toView< _T > > >
+  T const & referenceAsView() const
   { return *m_data; }
 
   ///@}

@@ -369,7 +369,7 @@ public:
    * @brief Provide an immutable arrayView to the nodes-to-elements-regions relation.
    * @return const reference to nodes-to-elements-regions relation
    */
-  ArrayOfArraysView< localIndex const > const & elementRegionList() const { return m_toElements.m_toElementRegion.toViewConst(); }
+  ArrayOfArraysView< localIndex const > elementRegionList() const { return m_toElements.m_toElementRegion.toViewConst(); }
 
   /**
    * @brief Get the mutable nodes-to-elements-subregions relation.
@@ -381,7 +381,7 @@ public:
    * @brief Provide an immutable arrayView to the nodes-to-elements-subregions relation.
    * @return const reference to nodes-to-elements-subregions relation
    */
-  ArrayOfArraysView< localIndex const > const & elementSubRegionList() const { return m_toElements.m_toElementSubRegion.toViewConst(); }
+  ArrayOfArraysView< localIndex const > elementSubRegionList() const { return m_toElements.m_toElementSubRegion.toViewConst(); }
 
   /**
    * @brief Get the mutable nodes-to-elements indices.
@@ -394,7 +394,7 @@ public:
    * @return const reference to nodes-to-elements indices
    */
 
-  ArrayOfArraysView< localIndex const > const & elementList() const
+  ArrayOfArraysView< localIndex const > elementList() const
   { return m_toElements.m_toElementIndex.toViewConst(); }
 
   //START_SPHINX_REFPOS_ACCESS

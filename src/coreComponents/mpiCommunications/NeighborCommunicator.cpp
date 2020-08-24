@@ -353,10 +353,10 @@ void NeighborCommunicator::PrepareAndSendGhosts( bool const GEOSX_UNUSED_PARAM( 
     elemManager.ConstructViewAccessor< array1d< localIndex >, arrayView1d< localIndex > >( ObjectManagerBase::viewKeyStruct::adjacencyListString,
                                                                                            std::to_string( this->m_neighborRank ) );
 
-  int bufferSize = GhostSize( nodeManager, nodeAdjacencyList,
-                              edgeManager, edgeAdjacencyList,
-                              faceManager, faceAdjacencyList,
-                              elemManager, elemAdjacencyList );
+  int const bufferSize = GhostSize( nodeManager, nodeAdjacencyList,
+                                    edgeManager, edgeAdjacencyList,
+                                    faceManager, faceAdjacencyList,
+                                    elemManager, elemAdjacencyList );
 
   this->resizeSendBuffer( commID, bufferSize );
   this->PostSizeSend( commID );
@@ -364,11 +364,11 @@ void NeighborCommunicator::PrepareAndSendGhosts( bool const GEOSX_UNUSED_PARAM( 
   buffer_type & sendBuffer = SendBuffer( commID );
   buffer_unit_type * sendBufferPtr = sendBuffer.data();
 
-  int packedSize = PackGhosts( sendBufferPtr,
-                               nodeManager, nodeAdjacencyList,
-                               edgeManager, edgeAdjacencyList,
-                               faceManager, faceAdjacencyList,
-                               elemManager, elemAdjacencyList );
+  int const packedSize = PackGhosts( sendBufferPtr,
+                                     nodeManager, nodeAdjacencyList,
+                                     edgeManager, edgeAdjacencyList,
+                                     faceManager, faceAdjacencyList,
+                                     elemManager, elemAdjacencyList );
 
   GEOSX_ERROR_IF_NE( bufferSize, packedSize );
 

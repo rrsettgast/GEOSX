@@ -610,22 +610,21 @@ public:
    * @return A const reference to a view to const data.
    */
   template< typename MESH_DATA_TRAIT >
-  auto const & getExtrinsicData() const
+  decltype( auto ) getExtrinsicData() const
   {
-    return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->referenceAsView();
+    return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->reference();
   }
 
   /**
-   * @brief Get a view to the data associated with a trait from this
-   *   ObjectManagerBase.
+   * @brief Get the data associated with a trait from this ObjectManagerBase.
    * @tparam MESH_DATA_TRAIT The trait that holds the type and key of the data
    *   to be retrieved from this ObjectManagerBase.
-   * @return A reference to a view to the data.
+   * @return A reference to the data.
    */
   template< typename MESH_DATA_TRAIT >
-  auto & getExtrinsicData()
+  decltype( auto ) getExtrinsicData()
   {
-    return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->referenceAsView();
+    return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->reference();
   }
 
   /**
@@ -795,7 +794,7 @@ public:
    * @brief Get the external set, const version.
    * @return Sorted array indices.
    */
-  SortedArrayView< localIndex const > const & externalSet() const
+  SortedArrayView< localIndex const > externalSet() const
   { return m_sets.getReference< SortedArray< localIndex > >( m_ObjectManagerBaseViewKeys.externalSet ); }
 
   /**

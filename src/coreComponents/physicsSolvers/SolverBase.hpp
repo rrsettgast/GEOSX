@@ -99,7 +99,7 @@ public:
    * @return a reference to linear system matrix of this solver
    */
   CRSMatrix< real64, globalIndex > & getLocalMatrix()       { return m_localMatrix; }
-  CRSMatrixView< real64 const, globalIndex const > const & getLocalMatrix() const { return m_localMatrix.toViewConst(); }
+  CRSMatrixView< real64 const, globalIndex const > getLocalMatrix() const { return m_localMatrix.toViewConst(); }
 
   /**
    * @brief Getter for local rhs vector
