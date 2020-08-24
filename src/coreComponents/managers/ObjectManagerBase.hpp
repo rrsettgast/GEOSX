@@ -610,7 +610,7 @@ public:
    * @return A const reference to a view to const data.
    */
   template< typename MESH_DATA_TRAIT >
-  decltype( auto ) getExtrinsicData() const
+  GEOSX_DECLTYPE_AUTO_RETURN getExtrinsicData() const
   {
     return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->reference();
   }
@@ -622,7 +622,7 @@ public:
    * @return A reference to the data.
    */
   template< typename MESH_DATA_TRAIT >
-  decltype( auto ) getExtrinsicData()
+  GEOSX_DECLTYPE_AUTO_RETURN getExtrinsicData()
   {
     return this->getWrapper< typename MESH_DATA_TRAIT::type >( MESH_DATA_TRAIT::key )->reference();
   }

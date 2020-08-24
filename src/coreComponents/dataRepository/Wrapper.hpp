@@ -40,7 +40,6 @@
 #include <cstdlib>
 #include <type_traits>
 
-
 namespace geosx
 {
 
@@ -533,7 +532,7 @@ public:
    * @return reference to T, or in the case of an Array, a reference to an
    *         ArrayView<T const> const.
    */
-  decltype( auto ) reference() const
+  GEOSX_DECLTYPE_AUTO_RETURN reference() const
   { return referenceAsView(); }
 
   /**
@@ -545,7 +544,7 @@ public:
    * themselves into views. For other types, a regular reference is returned.
    */
   template< typename _T=T, typename=std::enable_if_t< traits::HasMemberFunction_toView< _T > > >
-  decltype( auto ) referenceAsView()
+  GEOSX_DECLTYPE_AUTO_RETURN referenceAsView()
   { return m_data->toView(); }
 
   /**
@@ -559,7 +558,7 @@ public:
    * @copydoc referenceAsView()
    */
   template< typename _T=T, typename=std::enable_if_t< traits::HasMemberFunction_toView< _T > > >
-  decltype( auto ) referenceAsView() const
+  GEOSX_DECLTYPE_AUTO_RETURN referenceAsView() const
   { return m_data->toViewConst(); }
 
   /**
