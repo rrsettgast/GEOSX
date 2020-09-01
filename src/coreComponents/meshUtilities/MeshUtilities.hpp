@@ -60,12 +60,7 @@ public:
 
   ///@}
 
-  /**
-   * @brief Build all the node sets from a geometric object in the DomainPartition.
-   * @param[in] geometry a pointer to the group in the data repository
-   * @param[in] nodeManager pointer to the NodeManager object in the DomainPartition
-   */
-  static void GenerateNodesets( dataRepository::Group const * geometry,
+          static void GenerateNodesets( dataRepository::Group const * geometry,
                                 NodeManager * const nodeManager );
 
 //  static void GenerateFasesetsAndAssociatedNodesets( xmlWrapper const & hdn,
